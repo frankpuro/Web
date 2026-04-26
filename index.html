@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dev Portfolio — Full Stack Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060608;
+    --surface: #0d0d12;
+    --border: #1a1a2e;
+    --accent: #00ff94;
+    --accent2: #7b2fff;
+    --accent3: #ff6b35;
+    --text: #e8e8f0;
+    --muted: #5a5a7a;
+    --card: #10101a;
+    --glow: rgba(0,255,148,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
+  }
+  .cursor-dot {
+    width: 8px; height: 8px; background: var(--accent);
+    border-radius: 50%; position: absolute;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px; border: 1.5px solid var(--accent);
+    border-radius: 50%; position: absolute;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+    opacity: 0.5;
+  }
+  body:has(a:hover) .cursor-ring,
+  body:has(button:hover) .cursor-ring { transform: translate(-50%,-50%) scale(1.6); opacity: 1; }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025; pointer-events: none;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(6,6,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 2px;
+  }
+  .nav-logo span { color: var(--muted); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
+    background: var(--accent); transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-status {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent);
+  }
+  .status-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 8rem 3rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,255,148,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,148,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridShift 20s linear infinite;
+  }
+  @keyframes gridShift { from{background-position:0 0} to{background-position:60px 60px} }
+
+  .hero-orb {
+    position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none;
+  }
+  .orb1 { width:500px;height:500px;background:rgba(0,255,148,0.08);top:-10%;right:-5%;animation:orbFloat 8s ease-in-out infinite; }
+  .orb2 { width:400px;height:400px;background:rgba(123,47,255,0.07);bottom:-10%;left:-5%;animation:orbFloat 10s ease-in-out infinite reverse; }
+  @keyframes orbFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-30px) scale(1.05)} }
+
+  .hero-content { position: relative; z-index: 2; max-width: 900px; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--accent); border: 1px solid rgba(0,255,148,0.3);
+    padding: 0.4rem 1rem; border-radius: 2px;
+    margin-bottom: 2rem;
+    background: rgba(0,255,148,0.05);
+    animation: fadeSlideUp 0.8s ease both;
+  }
+  .hero-tag { opacity: 0.5; }
+
+  h1.hero-title {
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -3px;
+    margin-bottom: 1.5rem;
+    animation: fadeSlideUp 0.8s 0.15s ease both;
+  }
+  h1.hero-title .line { display: block; overflow: hidden; }
+  h1.hero-title .accent { color: var(--accent); }
+  h1.hero-title .stroke {
+    -webkit-text-stroke: 1.5px var(--text);
+    color: transparent;
+  }
+
+  .hero-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem; color: var(--muted); max-width: 520px;
+    line-height: 1.7; margin-bottom: 3rem;
+    animation: fadeSlideUp 0.8s 0.3s ease both;
+  }
+
+  .hero-cta {
+    display: flex; gap: 1rem; align-items: center;
+    animation: fadeSlideUp 0.8s 0.45s ease both;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: var(--accent); color: var(--bg);
+    font-family: 'Space Mono', monospace; font-size: 0.8rem;
+    font-weight: 700; letter-spacing: 1px;
+    padding: 0.85rem 2rem; text-decoration: none;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    transition: all 0.2s; cursor: none;
+  }
+  .btn-primary:hover { background: #00e085; box-shadow: 0 0 30px rgba(0,255,148,0.4); transform: translateY(-2px); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    border: 1px solid var(--border); color: var(--text);
+    font-family: 'Space Mono', monospace; font-size: 0.8rem;
+    letter-spacing: 1px; padding: 0.85rem 2rem; text-decoration: none;
+    transition: all 0.2s; cursor: none;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-scroll {
+    position: absolute; bottom: 3rem; left: 3rem;
+    display: flex; align-items: center; gap: 1rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
+    animation: fadeSlideUp 0.8s 0.6s ease both;
+  }
+  .scroll-line { width: 60px; height: 1px; background: var(--border); }
+
+  .hero-counter {
+    position: absolute; bottom: 3rem; right: 3rem;
+    font-family: 'Space Mono', monospace; font-size: 0.7rem;
+    color: var(--muted); text-align: right;
+    animation: fadeSlideUp 0.8s 0.6s ease both;
+  }
+  .hero-counter strong { display: block; font-size: 2rem; color: var(--text); font-family: 'Syne', sans-serif; font-weight: 800; }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTIONS */
+  section { padding: 6rem 3rem; position: relative; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--accent);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 1rem; opacity: 0.8;
+  }
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800; letter-spacing: -1px;
+    margin-bottom: 3rem;
+    line-height: 1.1;
+  }
+
+  /* STACK SECTION */
+  .stack-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .stack-marquee-wrap { overflow: hidden; margin-bottom: 1.5rem; }
+  .stack-marquee {
+    display: flex; gap: 2rem; width: max-content;
+    animation: marquee 20s linear infinite;
+  }
+  .stack-marquee.reverse { animation-direction: reverse; animation-duration: 25s; }
+  @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  .tech-pill {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding: 0.6rem 1.4rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; color: var(--text);
+    white-space: nowrap;
+    transition: all 0.3s;
+  }
+  .tech-pill:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 15px rgba(0,255,148,0.1); }
+  .tech-icon { font-size: 1.1rem; }
+
+  /* SKILLS GRID */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .skill-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative; overflow: hidden;
+    transition: all 0.3s;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .skill-card:hover { border-color: rgba(0,255,148,0.3); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  .skill-card:hover::before { opacity: 1; }
+
+  .skill-card-header {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem;
+  }
+  .skill-icon {
+    width: 45px; height: 45px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    background: rgba(0,255,148,0.08);
+    border: 1px solid rgba(0,255,148,0.2);
+  }
+  .skill-card h3 { font-size: 1.1rem; font-weight: 700; }
+  .skill-card p { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
+
+  .skill-bar-wrap { margin-top: 1.5rem; }
+  .skill-bar-label {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    color: var(--muted); margin-bottom: 0.4rem;
+  }
+  .skill-bar {
+    height: 3px; background: var(--border); position: relative; overflow: hidden;
+  }
+  .skill-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 0;
+    animation: fillBar 1.5s ease both;
+    animation-play-state: paused;
+  }
+  .skill-card:hover .skill-bar-fill { animation-play-state: running; }
+  @keyframes fillBar { from{width:0} }
+
+  /* PROJECTS */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; }
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden; position: relative;
+    transition: all 0.3s;
+    display: flex; flex-direction: column;
+  }
+  .project-card:hover { border-color: rgba(0,255,148,0.3); transform: translateY(-6px); box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+
+  .project-thumb {
+    height: 200px; position: relative; overflow: hidden;
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .project-thumb-code {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    color: var(--accent); opacity: 0.25; padding: 1rem;
+    line-height: 1.6; overflow: hidden; white-space: pre;
+    position: absolute; inset: 0;
+  }
+  .project-thumb-icon {
+    font-size: 3.5rem; position: relative; z-index: 1;
+    filter: drop-shadow(0 0 20px rgba(0,255,148,0.5));
+  }
+  .project-thumb-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,255,148,0.05), rgba(123,47,255,0.05));
+  }
+
+  .project-body { padding: 1.8rem; flex: 1; display: flex; flex-direction: column; }
+  .project-number {
+    font-family: 'Space Mono', monospace; font-size: 0.65rem;
+    color: var(--muted); margin-bottom: 0.8rem; letter-spacing: 2px;
+  }
+  .project-body h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.7rem; }
+  .project-body p { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--muted); line-height: 1.7; flex: 1; }
+
+  .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.2rem; }
+  .tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    color: var(--accent); border: 1px solid rgba(0,255,148,0.25);
+    padding: 0.25rem 0.7rem; background: rgba(0,255,148,0.05);
+  }
+  .project-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    color: var(--text); text-decoration: none; margin-top: 1.5rem;
+    border-bottom: 1px solid var(--border); padding-bottom: 0.3rem;
+    transition: all 0.2s;
+  }
+  .project-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* TERMINAL */
+  .terminal-section { background: var(--surface); border-top: 1px solid var(--border); }
+  .terminal {
+    background: #080810; border: 1px solid var(--border);
+    max-width: 800px; margin: 0 auto;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  }
+  .terminal-header {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border);
+    background: #0b0b15;
+  }
+  .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .td1 { background: #ff5f56; } .td2 { background: #ffbd2e; } .td3 { background: #27c93f; }
+  .term-title { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-left: auto; }
+
+  .terminal-body { padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 2; }
+  .term-line { display: flex; gap: 0.7rem; }
+  .term-prompt { color: var(--accent); }
+  .term-cmd { color: var(--text); }
+  .term-out { color: var(--muted); padding-left: 1.5rem; }
+  .term-out.success { color: #27c93f; }
+  .term-out.info { color: #7b2fff; }
+  .term-cursor { display: inline-block; width: 8px; height: 1em; background: var(--accent); animation: blink 1s step-end infinite; vertical-align: middle; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* EXPERIENCE */
+  .timeline { position: relative; max-width: 700px; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+  .timeline-item {
+    padding: 0 0 3rem 2.5rem; position: relative;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute; left: -4px; top: 4px;
+    width: 9px; height: 9px;
+    background: var(--accent); border-radius: 50%;
+    box-shadow: 0 0 12px rgba(0,255,148,0.6);
+  }
+  .timeline-date {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: var(--accent); margin-bottom: 0.4rem; letter-spacing: 1px;
+  }
+  .timeline-item h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .timeline-company { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.8rem; }
+  .timeline-desc { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .contact-section .section-title { font-size: clamp(2.5rem, 6vw, 5rem); }
+  .contact-grid {
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem;
+    margin-top: 3rem;
+  }
+  .contact-card {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--card); border: 1px solid var(--border);
+    padding: 1.2rem 2rem; text-decoration: none;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    transition: all 0.3s; cursor: none;
+  }
+  .contact-card:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,255,148,0.15); }
+  .contact-icon { font-size: 1.3rem; }
+
+  /* FOOTER */
+  footer {
+    padding: 2rem 3rem;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--border);
+  }
+  .stat-item {
+    padding: 2.5rem; border-right: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-item::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .stat-item:hover::after { opacity: 1; }
+  .stat-num { font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-label { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem; }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(40px); transition: all 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.5rem; }
+    .hero { padding: 7rem 1.5rem 4rem; }
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+    .stat-item:nth-child(2) { border-right: none; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    body { cursor: auto; }
+    .cursor { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor">
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">dev<span>.portfolio</span></a>
+  <ul class="nav-links">
+    <li><a href="#stack">Stack</a></li>
+    <li><a href="#projects">Proyectos</a></li>
+    <li><a href="#experience">Experiencia</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    Disponible para proyectos
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="orb1 hero-orb"></div>
+  <div class="orb2 hero-orb"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span>⚡</span>
+      <span class="hero-tag">// Full Stack Developer</span>
+      Backend · DevOps · Cloud
+    </div>
+    <h1 class="hero-title">
+      <span class="line">Construyo</span>
+      <span class="line accent">sistemas</span>
+      <span class="line stroke">escalables</span>
+    </h1>
+    <p class="hero-desc">
+      Desarrollador Full Stack con experiencia en arquitecturas modernas,
+      contenedores Docker, bases de datos MySQL/PostgreSQL, y APIs robustas con PHP.
+      De la idea al servidor — sin compromiso.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">Ver proyectos →</a>
+      <a href="#contact" class="btn-ghost">Contacto</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    scroll
+  </div>
+  <div class="hero-counter">
+    <strong id="year-counter">4+</strong>
+    años de experiencia
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-item reveal">
+    <div class="stat-num">28+</div>
+    <div class="stat-label">Proyectos completados</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-1">
+    <div class="stat-num">99%</div>
+    <div class="stat-label">Uptime en producción</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-2">
+    <div class="stat-num">15+</div>
+    <div class="stat-label">Tecnologías dominadas</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-3">
+    <div class="stat-num">∞</div>
+    <div class="stat-label">Líneas de código escritas</div>
+  </div>
+</div>
+
+<!-- STACK -->
+<section id="stack" class="stack-section">
+  <div class="section-label">// 01 — Tecnologías</div>
+  <h2 class="section-title reveal">Mi Stack Técnico</h2>
+
+  <div class="stack-marquee-wrap">
+    <div class="stack-marquee">
+      <div class="tech-pill"><span class="tech-icon">🐳</span> Docker</div>
+      <div class="tech-pill"><span class="tech-icon">🐘</span> PHP 8</div>
+      <div class="tech-pill"><span class="tech-icon">🗄️</span> MySQL</div>
+      <div class="tech-pill"><span class="tech-icon">⚡</span> Laravel</div>
+      <div class="tech-pill"><span class="tech-icon">🔷</span> TypeScript</div>
+      <div class="tech-pill"><span class="tech-icon">⚛️</span> React</div>
+      <div class="tech-pill"><span class="tech-icon">🐧</span> Linux</div>
+      <div class="tech-pill"><span class="tech-icon">🔴</span> Redis</div>
+      <div class="tech-pill"><span class="tech-icon">🐳</span> Docker</div>
+      <div class="tech-pill"><span class="tech-icon">🐘</span> PHP 8</div>
+      <div class="tech-pill"><span class="tech-icon">🗄️</span> MySQL</div>
+      <div class="tech-pill"><span class="tech-icon">⚡</span> Laravel</div>
+      <div class="tech-pill"><span class="tech-icon">🔷</span> TypeScript</div>
+      <div class="tech-pill"><span class="tech-icon">⚛️</span> React</div>
+      <div class="tech-pill"><span class="tech-icon">🐧</span> Linux</div>
+      <div class="tech-pill"><span class="tech-icon">🔴</span> Redis</div>
+    </div>
+  </div>
+
+  <div class="stack-marquee-wrap">
+    <div class="stack-marquee reverse">
+      <div class="tech-pill"><span class="tech-icon">🏗️</span> Nginx</div>
+      <div class="tech-pill"><span class="tech-icon">☁️</span> AWS</div>
+      <div class="tech-pill"><span class="tech-icon">🔗</span> REST APIs</div>
+      <div class="tech-pill"><span class="tech-icon">🐙</span> Git</div>
+      <div class="tech-pill"><span class="tech-icon">🟢</span> Node.js</div>
+      <div class="tech-pill"><span class="tech-icon">🐘</span> PostgreSQL</div>
+      <div class="tech-pill"><span class="tech-icon">🔁</span> CI/CD</div>
+      <div class="tech-pill"><span class="tech-icon">📦</span> Composer</div>
+      <div class="tech-pill"><span class="tech-icon">🏗️</span> Nginx</div>
+      <div class="tech-pill"><span class="tech-icon">☁️</span> AWS</div>
+      <div class="tech-pill"><span class="tech-icon">🔗</span> REST APIs</div>
+      <div class="tech-pill"><span class="tech-icon">🐙</span> Git</div>
+      <div class="tech-pill"><span class="tech-icon">🟢</span> Node.js</div>
+      <div class="tech-pill"><span class="tech-icon">🐘</span> PostgreSQL</div>
+      <div class="tech-pill"><span class="tech-icon">🔁</span> CI/CD</div>
+      <div class="tech-pill"><span class="tech-icon">📦</span> Composer</div>
+    </div>
+  </div>
+
+  <div style="height: 3rem;"></div>
+
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="skill-card-header">
+        <div class="skill-icon">🐳</div>
+        <h3>DevOps & Containers</h3>
+      </div>
+      <p>Orquestación con Docker Compose, pipelines CI/CD, despliegue en entornos Linux con Nginx y gestión de infraestructura cloud.</p>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Docker / DevOps</span><span>92%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:92%"></div></div>
+      </div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>CI/CD Pipelines</span><span>85%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:85%"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-card reveal reveal-delay-1">
+      <div class="skill-card-header">
+        <div class="skill-icon">🐘</div>
+        <h3>Backend — PHP & APIs</h3>
+      </div>
+      <p>Desarrollo de APIs RESTful con PHP 8 y Laravel. Arquitecturas MVC, autenticación JWT, patrones de diseño y código limpio.</p>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>PHP / Laravel</span><span>95%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:95%"></div></div>
+      </div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>REST / GraphQL</span><span>88%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:88%"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-card reveal reveal-delay-2">
+      <div class="skill-card-header">
+        <div class="skill-icon">🗄️</div>
+        <h3>Bases de Datos</h3>
+      </div>
+      <p>Diseño y optimización de esquemas MySQL/PostgreSQL. Queries complejos, índices, stored procedures y estrategias de caché con Redis.</p>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>MySQL / PostgreSQL</span><span>90%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Redis / Caching</span><span>80%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:80%"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-card reveal">
+      <div class="skill-card-header">
+        <div class="skill-icon">⚛️</div>
+        <h3>Frontend Moderno</h3>
+      </div>
+      <p>Interfaces reactivas con React y TypeScript. Integración de APIs, gestión de estado, y rendimiento óptimo en producción.</p>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>React / TypeScript</span><span>87%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:87%"></div></div>
+      </div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Node.js / Express</span><span>82%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:82%"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-card reveal reveal-delay-1">
+      <div class="skill-card-header">
+        <div class="skill-icon">☁️</div>
+        <h3>Cloud & Servidores</h3>
+      </div>
+      <p>Configuración de servidores Linux, Nginx como reverse proxy, SSL, gestión de dominios y despliegue en AWS / DigitalOcean.</p>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Linux / Nginx</span><span>88%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:88%"></div></div>
+      </div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>AWS / Cloud</span><span>75%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:75%"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-card reveal reveal-delay-2">
+      <div class="skill-card-header">
+        <div class="skill-icon">🔐</div>
+        <h3>Seguridad & Testing</h3>
+      </div>
+      <p>Implementación de autenticación OAuth, JWT, encriptación de datos, testing unitario y de integración con PHPUnit y Jest.</p>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Seguridad Web</span><span>83%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:83%"></div></div>
+      </div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Testing / QA</span><span>78%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:78%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" style="padding: 6rem 3rem;">
+  <div class="section-label">// 02 — Proyectos</div>
+  <h2 class="section-title reveal">Proyectos destacados</h2>
+
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="project-thumb">
+        <div class="project-thumb-code">FROM php:8.2-fpm
+RUN docker-php-ext-install pdo pdo_mysql
+COPY . /var/www/html
+EXPOSE 9000
+CMD ["php-fpm"]</div>
+        <div class="project-thumb-overlay"></div>
+        <div class="project-thumb-icon">🐳</div>
+      </div>
+      <div class="project-body">
+        <div class="project-number">// 001</div>
+        <h3>Plataforma E-commerce Dockerizada</h3>
+        <p>Arquitectura microservicios con Docker Compose: PHP-FPM, MySQL 8, Redis para caché de sesiones y Nginx como load balancer. Soporte para 10k+ usuarios concurrentes.</p>
+        <div class="project-tags">
+          <span class="tag">Docker</span>
+          <span class="tag">PHP</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">Redis</span>
+          <span class="tag">Nginx</span>
+        </div>
+        <a href="#" class="project-link">Ver detalles →</a>
+      </div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-1">
+      <div class="project-thumb">
+        <div class="project-thumb-code">SELECT u.name, COUNT(o.id) AS orders,
+  SUM(o.total) AS revenue
+FROM users u
+JOIN orders o ON u.id = o.user_id
+WHERE o.created_at >= NOW() - INTERVAL 30 DAY
+GROUP BY u.id ORDER BY revenue DESC;</div>
+        <div class="project-thumb-overlay"></div>
+        <div class="project-thumb-icon">📊</div>
+      </div>
+      <div class="project-body">
+        <div class="project-number">// 002</div>
+        <h3>API REST de Analíticas</h3>
+        <p>API de alto rendimiento con Laravel para procesamiento de datos en tiempo real. Queries optimizados en MySQL con índices compuestos, paginación eficiente y respuestas &lt;50ms.</p>
+        <div class="project-tags">
+          <span class="tag">Laravel</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">JWT</span>
+          <span class="tag">REST API</span>
+        </div>
+        <a href="#" class="project-link">Ver detalles →</a>
+      </div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-thumb">
+        <div class="project-thumb-code">name: Deploy to Production
+on: push: branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker-compose up -d --build</div>
+        <div class="project-thumb-overlay"></div>
+        <div class="project-thumb-icon">🚀</div>
+      </div>
+      <div class="project-body">
+        <div class="project-number">// 003</div>
+        <h3>Pipeline CI/CD Automatizado</h3>
+        <p>Sistema de despliegue continuo con GitHub Actions, tests automatizados, build de imágenes Docker y rollback automático en caso de fallas en producción.</p>
+        <div class="project-tags">
+          <span class="tag">GitHub Actions</span>
+          <span class="tag">Docker</span>
+          <span class="tag">CI/CD</span>
+          <span class="tag">Linux</span>
+        </div>
+        <a href="#" class="project-link">Ver detalles →</a>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-thumb">
+        <div class="project-thumb-code">import React, { useState, useEffect } from 'react';
+import { fetchMetrics } from './api';
+
+export default function Dashboard() {
+  const [data, setData] = useState([]);
+  useEffect(() => { fetchMetrics().then(setData) }, []);
+  return &lt;MetricsGrid data={data} /&gt;;
+}</div>
+        <div class="project-thumb-overlay"></div>
+        <div class="project-thumb-icon">⚛️</div>
+      </div>
+      <div class="project-body">
+        <div class="project-number">// 004</div>
+        <h3>Dashboard de Monitoreo</h3>
+        <p>Aplicación React + TypeScript para visualización de métricas de servidor en tiempo real. WebSockets, gráficos interactivos y alertas configurables por threshold.</p>
+        <div class="project-tags">
+          <span class="tag">React</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">WebSocket</span>
+          <span class="tag">Node.js</span>
+        </div>
+        <a href="#" class="project-link">Ver detalles →</a>
+      </div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-1">
+      <div class="project-thumb">
+        <div class="project-thumb-code">server {
+    listen 443 ssl http2;
+    server_name api.dominio.com;
+    location / {
+        proxy_pass http://php-fpm:9000;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}</div>
+        <div class="project-thumb-overlay"></div>
+        <div class="project-thumb-icon">🏗️</div>
+      </div>
+      <div class="project-body">
+        <div class="project-number">// 005</div>
+        <h3>Infraestructura Multi-tenant</h3>
+        <p>Sistema multi-tenant con base de datos compartida y aislamiento por schema en MySQL. Nginx configurado como reverse proxy con SSL/TLS automático y rate limiting.</p>
+        <div class="project-tags">
+          <span class="tag">MySQL</span>
+          <span class="tag">Nginx</span>
+          <span class="tag">PHP</span>
+          <span class="tag">SSL</span>
+        </div>
+        <a href="#" class="project-link">Ver detalles →</a>
+      </div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-thumb">
+        <div class="project-thumb-code">$redis = new Redis();
+$redis->connect('redis', 6379);
+$cached = $redis->get('user:'.$id);
+if (!$cached) {
+  $data = DB::query('SELECT * FROM users WHERE id = ?', [$id]);
+  $redis->setex('user:'.$id, 3600, serialize($data));
+}</div>
+        <div class="project-thumb-overlay"></div>
+        <div class="project-thumb-icon">⚡</div>
+      </div>
+      <div class="project-body">
+        <div class="project-number">// 006</div>
+        <h3>Sistema de Caché Distribuido</h3>
+        <p>Implementación de estrategias de caché en capas: Redis para datos en caliente, optimización de queries SQL con query cache y compresión de respuestas HTTP.</p>
+        <div class="project-tags">
+          <span class="tag">Redis</span>
+          <span class="tag">PHP</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">Performance</span>
+        </div>
+        <a href="#" class="project-link">Ver detalles →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TERMINAL -->
+<section class="terminal-section">
+  <div class="section-label" style="text-align:center">// 03 — Interacción</div>
+  <h2 class="section-title reveal" style="text-align:center">Lo que dicen mis stacks</h2>
+
+  <div class="terminal reveal">
+    <div class="terminal-header">
+      <div class="term-dot td1"></div>
+      <div class="term-dot td2"></div>
+      <div class="term-dot td3"></div>
+      <div class="term-title">bash — dev@server:~</div>
+    </div>
+    <div class="terminal-body">
+      <div class="term-line"><span class="term-prompt">❯</span><span class="term-cmd">docker ps</span></div>
+      <div class="term-out success">CONTAINER ID   IMAGE         STATUS         NAMES</div>
+      <div class="term-out success">a1b2c3d4e5f6   php:8.2-fpm   Up 47 hours    app</div>
+      <div class="term-out success">9f8e7d6c5b4a   mysql:8.0     Up 47 hours    db</div>
+      <div class="term-out success">3c4d5e6f7a8b   redis:7       Up 47 hours    cache</div>
+      <div class="term-out success">2a1b3c4d5e6f   nginx:alpine  Up 47 hours    proxy</div>
+      <br>
+      <div class="term-line"><span class="term-prompt">❯</span><span class="term-cmd">mysql -u root -e "SHOW STATUS LIKE 'Queries';"</span></div>
+      <div class="term-out info">| Variable_name | Value     |</div>
+      <div class="term-out info">| Queries       | 2847391   |</div>
+      <br>
+      <div class="term-line"><span class="term-prompt">❯</span><span class="term-cmd">php artisan about</span></div>
+      <div class="term-out success">PHP Version ........ 8.2.12</div>
+      <div class="term-out success">Laravel Version .... 11.x</div>
+      <div class="term-out success">Environment ........ production</div>
+      <div class="term-out success">Cache Driver ....... redis</div>
+      <br>
+      <div class="term-line"><span class="term-prompt">❯</span><span class="term-cmd">_<span class="term-cursor"></span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">// 04 — Experiencia</div>
+  <h2 class="section-title reveal">Trayectoria Profesional</h2>
+
+  <div class="timeline">
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2023 — Presente</div>
+      <h3>Senior Full Stack Developer</h3>
+      <div class="timeline-company">Tech Solutions S.A. — Remoto</div>
+      <p class="timeline-desc">Liderazgo técnico en migración de arquitectura monolítica a microservicios Docker. Reducción del tiempo de deploy de 2 horas a 8 minutos con pipelines CI/CD. Optimización de queries MySQL que mejoró el rendimiento en un 340%.</p>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2021 — 2023</div>
+      <h3>Backend Developer</h3>
+      <div class="timeline-company">Digital Agency XYZ — Híbrido</div>
+      <p class="timeline-desc">Desarrollo de APIs REST con Laravel para 12 clientes enterprise. Implementación de sistemas de autenticación OAuth 2.0, integración con pasarelas de pago y gestión de bases de datos MySQL de hasta 50M+ de registros.</p>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2020 — 2021</div>
+      <h3>PHP Developer</h3>
+      <div class="timeline-company">Startup Fintech — Presencial</div>
+      <p class="timeline-desc">Construcción del backend de una plataforma de pagos desde cero. Integración con APIs bancarias, implementación de sistema de colas con Redis y diseño de esquema de base de datos para transacciones financieras.</p>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2019 — 2020</div>
+      <h3>Junior Developer</h3>
+      <div class="timeline-company">Web Studio — Presencial</div>
+      <p class="timeline-desc">Desarrollo de sitios web dinámicos con PHP vanilla y WordPress. Primeros pasos en MySQL, diseño de formularios, CRUD y gestión de hosting compartido en cPanel.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <div class="section-label">// 05 — Contacto</div>
+  <h2 class="section-title reveal">¿Tienes un<br><span style="color:var(--accent)">proyecto</span> en mente?</h2>
+  <p class="reveal" style="font-family:'JetBrains Mono',monospace;font-size:0.88rem;color:var(--muted);max-width:500px;margin:0 auto;line-height:1.8;">
+    Estoy disponible para proyectos freelance y posiciones full-time.<br>
+    Hablemos sobre cómo puedo ayudarte.
+  </p>
+
+  <div class="contact-grid">
+    <a href="mailto:dev@ejemplo.com" class="contact-card reveal">
+      <span class="contact-icon">✉️</span>
+      dev@ejemplo.com
+    </a>
+    <a href="https://linkedin.com" class="contact-card reveal reveal-delay-1" target="_blank">
+      <span class="contact-icon">💼</span>
+      LinkedIn
+    </a>
+    <a href="https://github.com" class="contact-card reveal reveal-delay-2" target="_blank">
+      <span class="contact-icon">🐙</span>
+      GitHub
+    </a>
+    <a href="#" class="contact-card reveal reveal-delay-3">
+      <span class="contact-icon">📄</span>
+      Descargar CV
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>Diseñado y construido con 💚 — <a href="#">Dev Portfolio</a></div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;">
+    <span style="color:var(--accent)">$</span> echo "Disponible para contratar" — © 2025
+  </div>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const dot = cursor.querySelector('.cursor-dot');
+  const ring = cursor.querySelector('.cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx+'px'; dot.style.top = my+'px'; });
+  (function animRing() {
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(animRing);
+  })();
+
+  // SCROLL REVEAL
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => obs.observe(el));
+
+  // TYPED EFFECT for hero badge
+  const badge = document.querySelector('.hero-badge');
+  
+  // COUNTER ANIMATION
+  function animateCount(el, target, suffix='') {
+    let start = 0; const dur = 2000; const step = dur / target;
+    const timer = setInterval(() => {
+      start++;
+      el.textContent = start + suffix;
+      if (start >= target) clearInterval(timer);
+    }, step);
+  }
+  
+  // Observe stats
+  const statsObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('.stat-num').forEach(el => {
+          const txt = el.textContent;
+          if (txt === '∞') return;
+          const num = parseInt(txt); const suf = txt.replace(num,'');
+          el.textContent = '0'+suf;
+          animateCount(el, num, suf);
+        });
+        statsObs.disconnect();
+      }
+    });
+  }, {threshold: 0.5});
+  const statsRow = document.querySelector('.stats-row');
+  if(statsRow) statsObs.observe(statsRow);
+
+  // GLITCH on hero title
+  const title = document.querySelector('.hero-title');
+  if (title) {
+    setInterval(() => {
+      title.style.filter = 'blur(1px)';
+      setTimeout(() => title.style.filter = '', 80);
+    }, 5000);
+  }
+
+  // NAV active state
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const navObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => {
+          a.style.color = a.getAttribute('href') === '#'+e.target.id ? 'var(--accent)' : '';
+        });
+      }
+    });
+  }, {threshold: 0.5});
+  sections.forEach(s => navObs.observe(s));
+</script>
+</body>
+</html>
